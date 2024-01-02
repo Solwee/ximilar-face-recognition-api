@@ -14,13 +14,12 @@ class ClientTest extends TestCase
         self::$bearerToken = getenv("XIMILAR_AUTH_TOKEN");
 
         if (self::$bearerToken === false || self::$bearerToken === "") {
-            throw new \Exception("No `XIMILAR_AUTH_TOKEN` env variable set - it is needed for pixT auth.");
+            throw new \Exception("No `XIMILAR_AUTH_TOKEN` env variable set - it is needed for auth.");
         }
     }
 
     public function testReal()
     {
-
 
 
         $client = new \Solwee\XimilarFaceRecognition\Client (
@@ -35,7 +34,7 @@ class ClientTest extends TestCase
             //"https://api.solwee.com/data/large-preview/4/29726/0283707353/profimedia-0283707353.jpg"
         ];
 
-        $arrayOfIdentityCollections = $client->getIdentification($imagePaths);
+        $arrayOfIdentityCollections = $client->getIdentificationByUrl($imagePaths);
 
         $this->assertIsArray($arrayOfIdentityCollections);
         $this->assertCount(2, $arrayOfIdentityCollections);
@@ -48,6 +47,9 @@ class ClientTest extends TestCase
         $this->assertCount(1, $havel2);
 
         foreach ($havel2 as $identity) {
+
+            //var_dump($identity);
+
             $this->assertInstanceOf(\Solwee\XimilarFaceRecognition\Identity::class, $identity);
             //$this->assertEquals("Václav Havel", $identity->getName());
         }
@@ -62,5 +64,32 @@ class ClientTest extends TestCase
 
     }
 
+
+    public function testReal2()
+    {
+
+        $client = new \Solwee\XimilarFaceRecognition\Client (
+            new \GuzzleHttp\Client(),
+            $this->serverUrl,
+            self::$bearerToken
+        );
+
+        $imagePaths = [
+            "https://showroom.profimedia.com/face_test1.jpeg",
+
+        ];
+
+        $dataPacks = [];
+        foreach ($imagePaths as $imagePath) {
+            $dataPacks[] = file_get_contents($imagePath);
+        }
+
+        $arrayOfIdentityCollections = $client->getIdentificationByFile($dataPacks);
+
+        $this->assertIsArray($arrayOfIdentityCollections);
+
+        //var_dump($arrayOfIdentityCollections);
+
+    }
 
 }
