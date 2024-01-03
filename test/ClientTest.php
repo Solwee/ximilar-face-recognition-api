@@ -75,13 +75,14 @@ class ClientTest extends TestCase
         );
 
         $imagePaths = [
-            "https://showroom.profimedia.com/face_test1.jpeg",
+            "test1" => "https://showroom.profimedia.com/face_test1.jpeg",
+            "test2" => "https://showroom.profimedia.com/face_test1.jpeg",
 
         ];
 
         $dataPacks = [];
-        foreach ($imagePaths as $imagePath) {
-            $dataPacks[] = file_get_contents($imagePath);
+        foreach ($imagePaths as $key => $imagePath) {
+            $dataPacks[$key] = file_get_contents($imagePath);
         }
 
         $arrayOfIdentityCollections = $client->getIdentificationByFile($dataPacks);

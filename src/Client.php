@@ -103,15 +103,13 @@ class Client
         $urls = [];
         $type = 'jpeg';
         foreach ($imageDataPacks as $key => $imageData) {
-            $urls[$key] = [
+            $urls[] = [
                 "_base64" => $base64 = 'data:image/' . $type . ';base64,' . base64_encode($imageData)
             ];
         }
-
         $data = [
             "records" => $urls
         ];
-
         $response = $this->client->request('POST', sprintf('%s/identity/v2/identify', $this->serverUrl), [
             'headers' => [
                 'Content-Type' => 'application/json',
@@ -120,6 +118,8 @@ class Client
                 'collection-id' => 'c4ed5dc5-4ca9-4b52-9d01-307c9eb55a1d',
             ], 'json' => $data
         ]);
+
+        //var_dump($response->getBody()->getContents());exit;
 
         $data = json_decode($response->getBody()->getContents(), true);
 
@@ -163,7 +163,7 @@ class Client
                 $identityCollection->addIdentity($identity);
             }
 
-            $output[$record["_url"]] = $identityCollection;
+            $output[$record["_id"]] = $identityCollection;
 
         }
 
