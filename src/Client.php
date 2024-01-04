@@ -1,5 +1,6 @@
 <?php
 namespace Solwee\XimilarFaceRecognition;
+use Psr\Http\Message\ResponseInterface;
 use Solwee\XimilarFaceRecognition\Exceptions\DataErrorException;
 
 class Client
@@ -7,16 +8,19 @@ class Client
     private \GuzzleHttp\Client $client;
     private string $serverUrl;
     private string $token;
+    private string $collectionId;
 
     public function __construct(
         \GuzzleHttp\Client $client,
         string $serverUrl,
-        string $token
+        string $token,
+        string $collectionId
     )
     {
         $this->client = $client;
         $this->serverUrl = $serverUrl;
         $this->token = $token;
+        $this->collectionId = $collectionId;
     }
 
     /**
@@ -26,12 +30,13 @@ class Client
      */
     public function getIdentificationByUrl(array $imagePaths): array
     {
-
-        $output = [];
         $urls = [];
-        foreach ($imagePaths as $imagePath) {
+        foreach ($imagePaths as $key => $imagePath) {
             $urls[] = [
-                "_url" => $imagePath
+                "_url" => $imagePath,
+                "meta_data" => [
+                    "own_id" => $key
+                ]
             ];
         }
 
@@ -44,67 +49,28 @@ class Client
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
                 'Authorization' => sprintf('Token %s', $this->token),
-                'collection-id' => 'c4ed5dc5-4ca9-4b52-9d01-307c9eb55a1d',
+                'collection-id' => $this->collectionId,
             ], 'json' => $data
         ]);
 
         $data = json_decode($response->getBody()->getContents(), true);
 
-        #Iterace analyzovaných obrázků
-        foreach ($data['records'] as $record) {
-            $identityCollection = new IdentityCollection($record["_url"], $record["_width"], $record["_height"], []);
-            #Iterace detekovaných identit
-            foreach($record['_objects'] as $object) {
-                if (empty($object['_identification']['best_match']['name'])) {
-                    $identity = new UnknownIdentity($object['bound_box'][0], $object['bound_box'][1], $object['bound_box'][2], $object['bound_box'][3], []);
-                } else {
-                    $identity = new Identity(
-                        $object['_identification']['best_match']['name'],
-                        $object['_identification']['best_match']['distance'],
-                        $object['bound_box'][0],
-                        $object['bound_box'][1],
-                        $object['bound_box'][2],
-                        $object['bound_box'][3],
-                        $object['_identification']['best_match']['_url'],
-                        []);
-
-                }
-
-
-                if ($object['_identification']['alternatives']) {
-                    foreach ($object['_identification']['alternatives'] as $alternative) {
-                        $identity->addAlternativeIdentity(new Identity(
-                            $alternative['name'],
-                            $alternative['distance'],
-                            $object['bound_box'][0],
-                            $object['bound_box'][1],
-                            $object['bound_box'][2],
-                            $object['bound_box'][3],
-                            $alternative['_url'],
-                            []
-                        ));
-                    }
-                }
-                $identityCollection->addIdentity($identity);
-            }
-
-            $output[$record["_url"]] = $identityCollection;
-
-        }
-
-        return $output;
+        return $this->processResponse($response);
 
     }
 
     public function getIdentificationByFile(array $imageDataPacks): array
     {
 
-        $output = [];
         $urls = [];
+        //@TODO: zjistit typ souboru
         $type = 'jpeg';
         foreach ($imageDataPacks as $key => $imageData) {
             $urls[] = [
-                "_base64" => $base64 = 'data:image/' . $type . ';base64,' . base64_encode($imageData)
+                "_base64" => $base64 = 'data:image/' . $type . ';base64,' . base64_encode($imageData),
+                "meta_data" => [
+                    "own_id" => $key
+                ]
             ];
         }
         $data = [
@@ -115,12 +81,19 @@ class Client
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
                 'Authorization' => sprintf('Token %s', $this->token),
-                'collection-id' => 'c4ed5dc5-4ca9-4b52-9d01-307c9eb55a1d',
+                'collection-id' => $this->collectionId,
             ], 'json' => $data
         ]);
 
-        //var_dump($response->getBody()->getContents());exit;
 
+
+        return $this->processResponse($response);
+
+    }
+
+    private function processResponse(ResponseInterface $response): array
+    {
+        $output = [];
         $data = json_decode($response->getBody()->getContents(), true);
 
         //var_dump($data);exit;
@@ -163,7 +136,7 @@ class Client
                 $identityCollection->addIdentity($identity);
             }
 
-            $output[$record["_id"]] = $identityCollection;
+            $output[$record["meta_data"]["own_id"]] = $identityCollection;
 
         }
 

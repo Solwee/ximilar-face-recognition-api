@@ -47,21 +47,8 @@ class ClientTest extends TestCase
         $this->assertCount(1, $havel2);
 
         foreach ($havel2 as $identity) {
-
-            //var_dump($identity);
-
             $this->assertInstanceOf(\Solwee\XimilarFaceRecognition\Identity::class, $identity);
-            //$this->assertEquals("Václav Havel", $identity->getName());
         }
-
-
-
-
-
-
-
-
-
     }
 
 
