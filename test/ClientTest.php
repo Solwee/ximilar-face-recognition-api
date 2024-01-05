@@ -8,6 +8,9 @@ class ClientTest extends TestCase
 {
     private string $serverUrl = "https://api.ximilar.com";
     private static string $bearerToken;
+    private string $workspaceId = "66c856e8-95a5-4ebd-8f98-8a7f4ef28403";
+    private int $productCollectionId = 20;
+    private string $searchCollectionId = "7b6327a0-7af1-44c8-b6e1-7baa0a358a70";
 
     public static function setUpBeforeClass(): void
     {
@@ -25,12 +28,15 @@ class ClientTest extends TestCase
         $client = new \Solwee\XimilarFaceRecognition\Client (
             new \GuzzleHttp\Client(),
             $this->serverUrl,
-            self::$bearerToken
+            self::$bearerToken,
+            $this->workspaceId,
+            $this->searchCollectionId,
+            $this->productCollectionId
         );
 
         $imagePaths = [
-            "https://d17-a.sdn.cz/d_17/c_img_QL_r/flhVS.jpeg?fl=cro,0,32,799,533%7Cres,1200,,1%7Cjpg,80,,1",
-            "https://1884403144.rsc.cdn77.org/foto/vaclav-havel/Zml0LWluLzEwNTF4NjIxL2ZpbHRlcnM6cXVhbGl0eSg4NSkvaW1n/2831207.jpg?v=0&st=yQemfGiMkunyz9faKNljMO6lVSNAKlvbBiZhl3r2mVc&ts=1600812000&e=0",
+            "a"=>"https://d17-a.sdn.cz/d_17/c_img_QL_r/flhVS.jpeg?fl=cro,0,32,799,533%7Cres,1200,,1%7Cjpg,80,,1",
+            "b"=>"https://1884403144.rsc.cdn77.org/foto/vaclav-havel/Zml0LWluLzEwNTF4NjIxL2ZpbHRlcnM6cXVhbGl0eSg4NSkvaW1n/2831207.jpg?v=0&st=yQemfGiMkunyz9faKNljMO6lVSNAKlvbBiZhl3r2mVc&ts=1600812000&e=0",
             //"https://api.solwee.com/data/large-preview/4/29726/0283707353/profimedia-0283707353.jpg"
         ];
 
@@ -39,15 +45,15 @@ class ClientTest extends TestCase
         $this->assertIsArray($arrayOfIdentityCollections);
         $this->assertCount(2, $arrayOfIdentityCollections);
 
-        $this->assertInstanceOf(\Solwee\XimilarFaceRecognition\IdentityCollection::class, $arrayOfIdentityCollections["https://d17-a.sdn.cz/d_17/c_img_QL_r/flhVS.jpeg?fl=cro,0,32,799,533%7Cres,1200,,1%7Cjpg,80,,1"]);
-        $this->assertInstanceOf(\Solwee\XimilarFaceRecognition\IdentityCollection::class, $arrayOfIdentityCollections["https://1884403144.rsc.cdn77.org/foto/vaclav-havel/Zml0LWluLzEwNTF4NjIxL2ZpbHRlcnM6cXVhbGl0eSg4NSkvaW1n/2831207.jpg?v=0&st=yQemfGiMkunyz9faKNljMO6lVSNAKlvbBiZhl3r2mVc&ts=1600812000&e=0"]);
+        $this->assertInstanceOf(\Solwee\XimilarFaceRecognition\FaceCollection::class, $arrayOfIdentityCollections["a"]);
+        $this->assertInstanceOf(\Solwee\XimilarFaceRecognition\FaceCollection::class, $arrayOfIdentityCollections["b"]);
 
-        $havel2 = $arrayOfIdentityCollections["https://1884403144.rsc.cdn77.org/foto/vaclav-havel/Zml0LWluLzEwNTF4NjIxL2ZpbHRlcnM6cXVhbGl0eSg4NSkvaW1n/2831207.jpg?v=0&st=yQemfGiMkunyz9faKNljMO6lVSNAKlvbBiZhl3r2mVc&ts=1600812000&e=0"];
+        $havel2 = $arrayOfIdentityCollections["b"];
 
         $this->assertCount(1, $havel2);
 
         foreach ($havel2 as $identity) {
-            $this->assertInstanceOf(\Solwee\XimilarFaceRecognition\Identity::class, $identity);
+            $this->assertInstanceOf(\Solwee\XimilarFaceRecognition\Face::class, $identity);
         }
     }
 
@@ -58,7 +64,10 @@ class ClientTest extends TestCase
         $client = new \Solwee\XimilarFaceRecognition\Client (
             new \GuzzleHttp\Client(),
             $this->serverUrl,
-            self::$bearerToken
+            self::$bearerToken,
+            $this->workspaceId,
+            $this->searchCollectionId,
+            $this->productCollectionId
         );
 
         $imagePaths = [

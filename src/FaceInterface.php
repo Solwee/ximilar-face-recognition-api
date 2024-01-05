@@ -2,7 +2,7 @@
 
 namespace Solwee\XimilarFaceRecognition;
 
-interface IdentityInterface
+interface FaceInterface
 {
     public function getFaceBoxX1(): int;
 

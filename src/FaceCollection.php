@@ -2,35 +2,35 @@
 
 namespace Solwee\XimilarFaceRecognition;
 
-class IdentityCollection implements \IteratorAggregate, \Countable
+class FaceCollection implements \IteratorAggregate, \Countable
 {
 
         /**
-        * @var IdentityInterface[]
+        * @var FaceInterface[]
         */
-        private array $identities;
+        private array $faces;
         private string $analyzedImageUrl;
         private int $analyzedImageWidth;
         private int $analyzedImageHeight;
-        public function __construct(string $analyzedImageUrl, int $analyzedImageWidth, int $analyzedImageHeight, array $identities = [])
+        public function __construct(string $analyzedImageUrl, int $analyzedImageWidth, int $analyzedImageHeight, array $faces = [])
         {
-            $this->identities = $identities;
+            $this->faces = $faces;
             $this->analyzedImageUrl = $analyzedImageUrl;
             $this->analyzedImageWidth = $analyzedImageWidth;
             $this->analyzedImageHeight = $analyzedImageHeight;
         }
-        public function addIdentity(IdentityInterface $identity): self
+        public function addFace(FaceInterface $identity): self
         {
-            $this->identities[] = $identity;
+            $this->faces[] = $identity;
             return $this;
         }
         public function getIterator(): \ArrayIterator
         {
-            return new \ArrayIterator($this->identities);
+            return new \ArrayIterator($this->faces);
         }
         public function count(): int
         {
-            return count($this->identities);
+            return count($this->faces);
         }
 
     public function getAnalyzedImageUrl(): string
