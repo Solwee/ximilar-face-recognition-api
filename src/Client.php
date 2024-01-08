@@ -57,7 +57,7 @@ class Client
         return $this->processIdentifyResponse($response);
 
     }
-    public function createIdentity(string $customIdentityID, string $name, array $metadata = [])
+    public function createIdentity(string $customIdentityID, string $name, array $metadata = []): Identity
     {
         $data = [
             "name" => $name,
@@ -73,7 +73,8 @@ class Client
 
         $data = json_decode($response->getBody()->getContents(), true);
 
-        return $data;
+        return new Identity($data["name"], $data["id"], $data["customer_product_id"]);
+
     }
 
     public function getIdentityByCustomID(string $customIdentityID): Identity

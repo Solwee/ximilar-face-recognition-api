@@ -25,8 +25,6 @@ class CreateIdentityTest extends TestCase
 
     public function testCreateIdentity()
     {
-
-
         $client = new \Solwee\XimilarFaceRecognition\Client (
             new \GuzzleHttp\Client(),
             $this->serverUrl,
@@ -36,12 +34,11 @@ class CreateIdentityTest extends TestCase
             $this->productCollectionId
         );
 
+        $identity = $client->createIdentity("identityTest-id1", "test number1");
 
 
-        $arrayOfIdentityCollections = $client->createIdentity("identityTest-id1", "test number1");
-
-        $this->assertIsArray($arrayOfIdentityCollections);
-        $this->assertEquals("identityTest-id1", $arrayOfIdentityCollections["customer_product_id"]);
+        $this->assertInstanceOf(Identity::class, $identity);
+        $this->assertEquals("identityTest-id1", $identity->getCustomId());
 
 
 
