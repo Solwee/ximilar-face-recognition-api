@@ -86,7 +86,12 @@ class Client
 
         $data = json_decode($response->getBody()->getContents(), true);
         $data = end($data["results"]);
-        return new Identity($data["name"], $data["id"], $data["customer_product_id"], $data["thumb"]);
+        if(isset($data["name"]) && $data["id"]) {
+            return new Identity($data["name"], $data["id"], $data["customer_product_id"], $data["thumb"]);
+        }
+
+        throw new DataErrorException("Identity not found");
+
     }
 
     public function getIdentity(string $identityID): Identity
@@ -97,7 +102,13 @@ class Client
 
         $data = json_decode($response->getBody()->getContents(), true);
 
-        return new Identity($data["name"], $data["id"], $data["customer_product_id"], $data["thumb"]);
+        if(isset($data["name"]) && $data["id"]) {
+            return new Identity($data["name"], $data["id"], $data["customer_product_id"], $data["thumb"]);
+        }
+
+        throw new DataErrorException("Identity not found");
+
+
     }
 
     public function addImageToIdentity(string $identityID, string $imageData): array
@@ -161,7 +172,7 @@ class Client
 
         #Iterace analyzovaných obrázků
         foreach ($data['records'] as $record) {
-            $identityCollection = new FaceCollection($record["_id"], $record["_width"], $record["_height"], []);
+            $faceCollection = new FaceCollection($record["_id"], $record["_width"], $record["_height"], []);
             #Iterace detekovaných identit
             foreach($record['_objects'] as $object) {
                 if (empty($object['_identification']['best_match']['name'])) {
@@ -190,17 +201,17 @@ class Client
                 if ($object['_identification']['alternatives']) {
                     foreach ($object['_identification']['alternatives'] as $alternative) {
                         $identity->addAlternativeIdentity(new Identity(
-                            $alternative['name'],
+                            $alternative['name'] . "(" . $alternative['distance'] . ")",
                             'unknown',
                             'unknown',
                             $alternative['_url']
                         ));
                     }
                 }
-                $identityCollection->addFace($identity);
+                $faceCollection->addFace($identity);
             }
 
-            $output[$record["meta_data"]["own_id"]] = $identityCollection;
+            $output[$record["meta_data"]["own_id"]] = $faceCollection;
 
         }
 
