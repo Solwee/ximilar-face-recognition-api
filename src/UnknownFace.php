@@ -10,13 +10,16 @@ class UnknownFace implements FaceInterface
     private int $faceBoxX2;
     private int $faceBoxY2;
     private array $alternativeIdentities;
-    public function __construct(int $faceBoxX1, int $faceBoxY1, int $faceBoxX2, int $faceBoxY2, array $alternativeIdentities = [])
+    private array $metadata;
+
+    public function __construct(int $faceBoxX1, int $faceBoxY1, int $faceBoxX2, int $faceBoxY2, array $alternativeIdentities = [], array $metadata = [])
     {
         $this->faceBoxX1 = $faceBoxX1;
         $this->faceBoxY1 = $faceBoxY1;
         $this->faceBoxX2 = $faceBoxX2;
         $this->faceBoxY2 = $faceBoxY2;
         $this->alternativeIdentities = $alternativeIdentities;
+        $this->metadata = $metadata;
     }
     public function getFaceBoxX1(): int
     {
@@ -45,5 +48,10 @@ class UnknownFace implements FaceInterface
     {
         $this->alternativeIdentities[] = $identity;
         return $this;
+    }
+
+    public function getMetadata(): array
+    {
+        return $this->metadata;
     }
 }

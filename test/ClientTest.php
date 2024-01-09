@@ -71,8 +71,9 @@ class ClientTest extends TestCase
         );
 
         $imagePaths = [
-            "test1" => "https://showroom.profimedia.com/face_test1.jpeg",
-            "test2" => "https://showroom.profimedia.com/face_test1.jpeg",
+            /*"test1" => "https://showroom.profimedia.com/face_test1.jpeg",
+            "test2" => "https://showroom.profimedia.com/face_test1.jpeg",*/
+            "test3" => "https://www.irozhlas.cz/sites/default/files/styles/zpravy_otvirak_velky/public/uploader/karel_havlicek_190708-132347_tec.jpg",
 
         ];
 
@@ -85,7 +86,7 @@ class ClientTest extends TestCase
 
         $this->assertIsArray($arrayOfIdentityCollections);
 
-        //var_dump($arrayOfIdentityCollections);
+        var_dump($arrayOfIdentityCollections);
 
     }
 

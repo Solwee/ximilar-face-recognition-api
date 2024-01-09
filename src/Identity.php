@@ -8,13 +8,15 @@ class Identity
     private string $id;
     private string $customId;
     private ?string $previewUrl;
+    private array $metadata;
 
 
     public function __construct(
         string $name,
         string $id,
         string $customId,
-        ?string $previewUrl = null
+        ?string $previewUrl = null,
+        array $metadata = []
     )
     {
 
@@ -22,6 +24,7 @@ class Identity
         $this->id = $id;
         $this->customId = $customId;
         $this->previewUrl = $previewUrl;
+        $this->metadata = $metadata;
     }
     public function getName(): string
     {
@@ -38,5 +41,10 @@ class Identity
     public function getPreviewUrl(): ?string
     {
         return $this->previewUrl;
+    }
+
+    public function getMetadata(): array
+    {
+        return $this->metadata;
     }
 }

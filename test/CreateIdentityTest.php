@@ -40,8 +40,6 @@ class CreateIdentityTest extends TestCase
         $this->assertInstanceOf(Identity::class, $identity);
         $this->assertEquals("identityTest-id1", $identity->getCustomId());
 
-
-
     }
 
     public function testGetIdentityByCustomID()
@@ -59,7 +57,8 @@ class CreateIdentityTest extends TestCase
 
 
 
-        $arrayOfIdentityCollections = $client->getIdentityByCustomID("identityTest-id1");
+        $arrayOfIdentityCollections = $client->getIdentityByCustomID("solweeID-178346");
+        //var_dump($arrayOfIdentityCollections);
 
         $this->assertInstanceOf(Identity::class, $arrayOfIdentityCollections);
         $this->assertEquals("identityTest-id1", $arrayOfIdentityCollections->getCustomId());
@@ -78,9 +77,38 @@ class CreateIdentityTest extends TestCase
             $this->searchCollectionId,
             $this->productCollectionId
         );
-        $arrayOfIdentityCollections = $client->getIdentity("0fe81e3a-2bb4-47da-a236-e675bd7f421e");
+        //$arrayOfIdentityCollections = $client->getIdentity("0fe81e3a-2bb4-47da-a236-e675bd7f421e");
+        $arrayOfIdentityCollections = $client->getIdentity("73c41880-c72b-4e98-bcb5-ccf8ca53682d");
+        //var_dump($arrayOfIdentityCollections);
         $this->assertInstanceOf(Identity::class, $arrayOfIdentityCollections);
         $this->assertEquals("identityTest-id1", $arrayOfIdentityCollections->getCustomId());
+
+
+
+
+    }
+
+    public function testUpdateIdentity()
+    {
+        $client = new \Solwee\XimilarFaceRecognition\Client (
+            new \GuzzleHttp\Client(),
+            $this->serverUrl,
+            self::$bearerToken,
+            $this->workspaceId,
+            $this->searchCollectionId,
+            $this->productCollectionId
+        );
+        //$arrayOfIdentityCollections = $client->getIdentity("0fe81e3a-2bb4-47da-a236-e675bd7f421e");
+        $arrayOfIdentityCollections = $client->updateIdentity(
+            "73c41880-c72b-4e98-bcb5-ccf8ca53682d",
+            "solweeID-178346",
+            "Karel Havlíček"
+        );
+
+        $this->assertInstanceOf(Identity::class, $arrayOfIdentityCollections);
+        $this->assertEquals("solweeID-178346", $arrayOfIdentityCollections->getCustomId());
+
+        var_dump($arrayOfIdentityCollections);
 
     }
 
