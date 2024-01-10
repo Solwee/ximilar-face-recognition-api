@@ -118,7 +118,13 @@ class Client
         $data = json_decode($response->getBody()->getContents(), true);
         $data = end($data["results"]);
         if(isset($data["name"]) && $data["id"]) {
-            return new Identity($data["name"], $data["id"], $data["customer_product_id"], $data["thumb"], $data["meta_data"]);
+            if(isset($data["meta_data"])) {
+                $metadata = $data["meta_data"];
+            }
+            else {
+                $metadata = [];
+            }
+            return new Identity($data["name"], $data["id"], $data["customer_product_id"], $data["thumb"], $metadata);
         }
 
         throw new DataErrorException("Identity not found");
@@ -179,7 +185,7 @@ class Client
                 ]
             ];
         }
-        $data = ["records" => $urls, "fields_to_return"=> ["customer_product_id","name"], "collection_id" => $this->searchCollectionId];
+        $data = ["records" => $urls, "fields_to_return"=> ["customer_product_id","name","_url"], "collection_id" => $this->searchCollectionId];
         $response = $this->client->request('POST', sprintf('%s/identity/v2/identify', $this->serverUrl), [
             'headers' => $this->getDefaultHeader(), 'json' => $data
         ]);
@@ -202,7 +208,7 @@ class Client
     {
         $output = [];
         $data = json_decode($response->getBody()->getContents(), true);
-
+        //var_dump($data);
         #Iterace analyzovaných obrázků
         foreach ($data['records'] as $record) {
             $faceCollection = new FaceCollection($record["_id"], $record["_width"], $record["_height"], []);
@@ -229,7 +235,7 @@ class Client
                         $object['bound_box'][2],
                         $object['bound_box'][3],
                         [],
-                        ["distance" => $object['_identification']['best_match']['distance']]
+                        /*["distance" => $object['_identification']['best_match']['distance']]*/
                     );
                 } else {
 
@@ -258,7 +264,8 @@ class Client
                             $alternative['name'] . "(" . $alternative['distance'] . ")",
                             'unknown',
                             'unknown',
-                            $alternative['_url']
+                            $alternative['_url'],
+                            ["distance" => $alternative['distance']]
                         ));
                     }
                 }
