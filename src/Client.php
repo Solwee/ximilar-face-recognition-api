@@ -11,6 +11,8 @@ class Client
     private string $searchCollectionId;
     private string $workspaceId;
     private int $identityCollectionId;
+    private float $thresholdLow;
+    private float $thresholdHigh;
 
     public function __construct(
         \GuzzleHttp\Client $client,
@@ -18,7 +20,9 @@ class Client
         string             $token,
         string             $workspaceId,
         string             $searchCollectionId,
-        int                $identityCollectionId
+        int                $identityCollectionId,
+        float              $thresholdLow = 1.05,
+        float              $thresholdHigh = 1.2
 
     )
     {
@@ -28,6 +32,8 @@ class Client
         $this->searchCollectionId = $searchCollectionId;
         $this->workspaceId = $workspaceId;
         $this->identityCollectionId = $identityCollectionId;
+        $this->thresholdLow = $thresholdLow;
+        $this->thresholdHigh = $thresholdHigh;
     }
 
     /**
@@ -47,7 +53,13 @@ class Client
             ];
         }
 
-        $data = ["records" => $urls, "collection_id" => $this->searchCollectionId];
+        $data = [
+            "records" => $urls,
+            "collection_id" => $this->searchCollectionId,
+            "fields_to_return"=> ["customer_product_id","name","_url"],
+            "threshold_low" => $this->thresholdLow,
+            "threshold_high" => $this->thresholdHigh
+        ];
 
         $response = $this->client->request('POST', sprintf('%s/identity/v2/identify', $this->serverUrl), [
             'headers' => $this->getDefaultHeader(), 'json' => $data
@@ -185,7 +197,13 @@ class Client
                 ]
             ];
         }
-        $data = ["records" => $urls, "fields_to_return"=> ["customer_product_id","name","_url"], "collection_id" => $this->searchCollectionId];
+        $data = [
+            "records" => $urls,
+            "fields_to_return"=> ["customer_product_id","name","_url"],
+            "collection_id" => $this->searchCollectionId,
+            "threshold_low" => $this->thresholdLow,
+            "threshold_high" => $this->thresholdHigh
+        ];
         $response = $this->client->request('POST', sprintf('%s/identity/v2/identify', $this->serverUrl), [
             'headers' => $this->getDefaultHeader(), 'json' => $data
         ]);
