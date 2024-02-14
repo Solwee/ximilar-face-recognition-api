@@ -94,6 +94,8 @@ class Client
 
     }
 
+
+
     public function updateIdentity(string $identityID, string $customIdentityID, string $name, array $metadata = []): Identity
     {
 
@@ -118,7 +120,21 @@ class Client
         return new Identity($data["name"], $data["id"], $data["customer_product_id"], metadata: $data["meta_data"]);
 
     }
+    public function deleteIdentity(string $identityID): ResponseInterface
+    {
 
+        $data = [
+            "workspace" => $this->workspaceId,
+            "product_collection" => $this->identityCollectionId,
+        ];
+
+        $response = $this->client->request('DELETE', sprintf('%s/product/v2/product/%s', $this->serverUrl, $identityID), [
+            'headers' => $this->getDefaultHeader(), 'json' => $data
+        ]);
+
+        return $response;
+
+    }
     public function getIdentityByCustomID(string $customIdentityID): Identity
     {
 

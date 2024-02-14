@@ -21,6 +21,25 @@ class ClientTest extends TestCase
         }
     }
 
+    public function testDelete()
+    {
+        $client = new \Solwee\XimilarFaceRecognition\Client (
+            new \GuzzleHttp\Client(),
+            $this->serverUrl,
+            self::$bearerToken,
+            $this->workspaceId,
+            $this->searchCollectionId,
+            $this->productCollectionId
+        );
+
+        $response = $client->deleteIdentity("4268499c-0ff1-4d84-8584-b7e2499496b4");
+
+        //var_dump($response);
+
+
+
+    }
+
     public function testReal()
     {
 
